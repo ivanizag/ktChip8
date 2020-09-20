@@ -1,5 +1,6 @@
 // TechRef 2.3
-const val FONT_HEIGHT = 5u
+const val FONT_ADDRESS = 0x50
+const val FONT_HEIGHT = 5
 
 class Display (
         private val width: Int,
@@ -11,10 +12,10 @@ class Display (
         frameBuffer = Array(height) {BooleanArray(width)}
     }
 
-    fun sprite(s: State, i: UShort, x: Int, y: Int, n: Int): UByte {
+    fun sprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {
         var collision = false
         for (h in 0..n-1) {
-           val pattern = s.memByte(i+h.toUShort()).toInt()
+           val pattern = s.memByte(i+h).toInt()
             for (w in 0..7) {
                 val current = getPixel(x+w, y+h)
                 val new = (pattern shr (7-w) and 1) == 1
@@ -25,7 +26,7 @@ class Display (
                 }
             }
         }
-        return if (collision) 1u else 0u
+        return if (collision) 1 else 0
     }
 
     fun getPixel(x: Int, y: Int) = frameBuffer[y.rem(height)][x.rem(width)]

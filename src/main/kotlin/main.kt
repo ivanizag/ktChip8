@@ -20,18 +20,26 @@ fun main(args: Array<String>) {
     var display = Display(64, 32)
     var keyboard = Keyboard()
     loadRom(state, "/home/casa/code/kotlin/ktChip8/sctest/SCTEST")
+    loadFont(state)
     state.jump(PC_START)
-    while (true) {
+    while (state.pc != 0x450) {
         step(state, display, keyboard)
     }
+    display.print()
 }
 
 fun loadRom(state: State, filename: String) {
     val f = File(filename)
     val data = f.readBytes()
-    var address = 0x200u
+    var address = 0x200
     for (b in data) {
-        state.memSet(address, b.toUByte())
+        state.memSet(address, b.toInt())
         address++
+    }
+}
+
+fun loadFont(state: State) {
+    for (i in 0..5*16) {
+        state.memSet(0x50 +i, 0xff)
     }
 }

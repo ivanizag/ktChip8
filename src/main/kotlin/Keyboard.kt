@@ -1,13 +1,13 @@
 // TechRef 2.4
 class Keyboard {
-    public fun isKeyPressed(key: UByte): Boolean {
+    public fun isKeyPressed(key: Int): Boolean {
         // TODO
         return false
     }
 
-    fun nextKey(): UByte {
+    fun nextKey(): Int {
         // Blocking
         // TODO
-        return 8u
+        return 8
     }
 }

@@ -1,6 +1,7 @@
 const val MEMORY_SIZE = 0x1000
 @ExperimentalUnsignedTypes
-const val MEMORY_MASK: UShort = 0xfffu
+const val MEMORY_MASK = 0xfff
+const val VALUE_MASK = 0xff
 const val REGISTER_COUNT = 16
 const val STACK_DEPTH = 16
 
@@ -8,34 +9,32 @@ const val STACK_DEPTH = 16
 class State {
 
     // TechRef 2.1 Memory
-    private var mem = UByteArray(MEMORY_SIZE)
+    private var mem = IntArray(MEMORY_SIZE)
 
-    fun memSet(address: UShort, value: UByte) {
-        mem[(address and MEMORY_MASK).toInt()] = value
+    fun memSet(address: Int, value: Int) {
+        mem[address and MEMORY_MASK] = value
     }
-    fun memSet(address: UInt, value: UByte) { memSet(address.toUShort(), value)}
 
-    fun memByte(address: UShort) = mem[(address and MEMORY_MASK).toInt()]
-    fun memByte(address: UInt) = memByte(address.toUShort())
-    fun memWord(address: UShort) = memByte(address).toUShort()*256u +
-            memByte((address+1u).toUShort()).toUShort()
+    fun memByte(address: Int) = mem[address and MEMORY_MASK] and VALUE_MASK
+    fun memWord(address: Int) = memByte(address)*256 +
+            memByte(address+1)
 
     // TechRef 2.2 Registers
-    var v = UByteArray(REGISTER_COUNT)
-    var i: UShort = 0u
-    var dt: UByte = 0u
-    var st: UByte = 0u
+    var v = IntArray(REGISTER_COUNT) // Must be 0 to 255
+    var i = 0
+    var dt = 0
+    var st = 0
 
-    var pc: UShort = 0u
+    var pc = 0
         private set
-    fun jump(address: UShort) {
+    fun jump(address: Int) {
         pc = address and MEMORY_MASK
     }
     fun skip() {
-        jump((pc+2u).toUShort())
+        jump(pc+2)
     }
 
-    private var stack = UShortArray(STACK_DEPTH)
+    private var stack = IntArray(STACK_DEPTH)
     private var sp = 0
     fun push() {
         sp = mod(sp + 1, STACK_DEPTH)
