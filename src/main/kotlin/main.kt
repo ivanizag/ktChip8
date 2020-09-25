@@ -20,12 +20,13 @@ fun main(args: Array<String>) {
     var display = Display(64, 32)
     var keyboard = Keyboard()
     loadRom(state, "/home/casa/code/kotlin/ktChip8/sctest/SCTEST")
-    loadFont(state)
+    state.memRangeSet(FONT, FONT_ADDRESS)
+
     state.jump(PC_START)
     while (state.pc != 0x450) {
         step(state, display, keyboard)
     }
-    display.print()
+    display.printScreen()
 }
 
 fun loadRom(state: State, filename: String) {
@@ -35,11 +36,5 @@ fun loadRom(state: State, filename: String) {
     for (b in data) {
         state.memSet(address, b.toInt())
         address++
-    }
-}
-
-fun loadFont(state: State) {
-    for (i in 0..5*16) {
-        state.memSet(0x50 +i, 0xff)
     }
 }

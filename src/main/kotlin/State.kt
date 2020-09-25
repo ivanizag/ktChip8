@@ -1,11 +1,10 @@
 const val MEMORY_SIZE = 0x1000
-@ExperimentalUnsignedTypes
 const val MEMORY_MASK = 0xfff
 const val VALUE_MASK = 0xff
 const val REGISTER_COUNT = 16
+const val REGISTER48_COUNT = 8
 const val STACK_DEPTH = 16
 
-@ExperimentalUnsignedTypes
 class State {
 
     // TechRef 2.1 Memory
@@ -14,6 +13,9 @@ class State {
     fun memSet(address: Int, value: Int) {
         mem[address and MEMORY_MASK] = value
     }
+    fun memRangeSet(range: IntArray, startAddress: Int) {
+        range.copyInto(mem, startAddress)
+    }
 
     fun memByte(address: Int) = mem[address and MEMORY_MASK] and VALUE_MASK
     fun memWord(address: Int) = memByte(address)*256 +
@@ -21,6 +23,7 @@ class State {
 
     // TechRef 2.2 Registers
     var v = IntArray(REGISTER_COUNT) // Must be 0 to 255
+    var v48 = IntArray(REGISTER48_COUNT) // Must be 0 to 255
     var i = 0
     var dt = 0
     var st = 0
