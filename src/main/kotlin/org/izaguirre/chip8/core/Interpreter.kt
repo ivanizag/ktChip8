@@ -1,12 +1,14 @@
 package org.izaguirre.chip8.core
 
+import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
+import org.izaguirre.chip8.core.Display.Companion.FONT_HEIGHT
+import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
+import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import kotlin.random.Random
-
-const val PC_START = 0x200
 
 fun mod(x: Int, y: Int) = Math.floorMod(x, y)
 
-fun step(s: State, d: Display, k: Keyboard) {
+fun step(s: State, d: Display, k: Keypad) {
     // TechRef 3.0
     val opcode = s.memWord(s.pc)
 
@@ -17,12 +19,6 @@ fun step(s: State, d: Display, k: Keyboard) {
     val kk = opcode and 0xff
     val c = opcode shr 12 and 0xf
     /* Opcodes can be cnnn, cxkk or cxyn */
-
-    print("%03x: %04x   %-20s".format(s.pc, opcode, disasm(opcode)))
-    for (i in 0..15) {
-        print("%02x ".format(s.v[i]))
-    }
-    println("%03x".format(s.i))
 
     s.skip()
 
@@ -126,6 +122,16 @@ fun step(s: State, d: Display, k: Keyboard) {
         }
         else -> throw Exception("Unknown opcode")
     }
+}
+
+fun printStep(s: State) {
+    val opcode = s.memWord(s.pc)
+    print("%03x: %04x   %-20s".format(s.pc, opcode, disasm(opcode)))
+    for (i in 0..15) {
+        print("%02x ".format(s.v[i]))
+    }
+    println("%03x".format(s.i))
+
 }
 
 fun disasm(opcode: Int): String {

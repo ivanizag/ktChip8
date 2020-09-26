@@ -1,16 +1,16 @@
 package org.izaguirre.chip8.core
 
-const val MEMORY_SIZE = 0x1000
-const val MEMORY_MASK = 0xfff
-const val VALUE_MASK = 0xff
-const val REGISTER_COUNT = 16
-const val REGISTER48_COUNT = 8
-const val STACK_DEPTH = 16
+import org.izaguirre.chip8.core.Display.Companion.FONT
+import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
+import java.io.File
 
 class State {
-
     // TechRef 2.1 Memory
     private var mem = IntArray(MEMORY_SIZE)
+
+    init {
+        memRangeSet(FONT, FONT_ADDRESS)
+    }
 
     fun memSet(address: Int, value: Int) {
         mem[address and MEMORY_MASK] = value
@@ -30,7 +30,7 @@ class State {
     var dt = 0
     var st = 0
 
-    var pc = 0
+    var pc = PC_START
         private set
     fun jump(address: Int) {
         pc = address and MEMORY_MASK
@@ -50,4 +50,23 @@ class State {
         sp = mod(sp - 1, STACK_DEPTH)
     }
 
+    fun loadRom(filename: String) {
+        val f = File(filename)
+        val data = f.readBytes()
+        var address = 0x200
+        for (b in data) {
+            memSet(address, b.toInt())
+            address++
+        }
+    }
+
+    companion object {
+        const val MEMORY_SIZE = 0x1000
+        const val MEMORY_MASK = 0xfff
+        const val VALUE_MASK = 0xff
+        const val REGISTER_COUNT = 16
+        const val REGISTER48_COUNT = 8
+        const val STACK_DEPTH = 16
+        const val PC_START = 0x200
+    }
 }

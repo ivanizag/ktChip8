@@ -1,11 +1,6 @@
 package org.izaguirre.chip8.core
 
-import org.izaguirre.chip8.core.PC_START
-import org.izaguirre.chip8.core.State
-import org.izaguirre.chip8.core.loadRom
-import org.izaguirre.chip8.core.step
 import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
 
 internal class Korax89Test {
@@ -22,14 +17,12 @@ internal class Korax89Test {
     fun run() {
         val state = State()
         val display = Display(64, 32)
-        val keyboard = DumbKeyboard()
-        loadRom(state, "src/test/resources/corax89test/test_opcode.ch8")
-        state.memRangeSet(FONT, FONT_ADDRESS)
+        val keyboard = DumbKeypad()
+        state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
 
         var okCount = 0
         var errCount = 0
         var cycles = 0
-        state.jump(PC_START)
         while (state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
             if ((state.memWord(state.pc) and 0xf000) == 0xd000 /*DRW*/) {
                 // We will draw

@@ -20,23 +20,12 @@ fun main() {
 
     val state = State()
     val display = Display(64, 32)
-    val keyboard = DumbKeyboard()
-    loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
-    state.memRangeSet(FONT, FONT_ADDRESS)
+    val keypad = DumbKeypad()
+    state.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
-    state.jump(PC_START)
     while (state.pc != 0x450) {
-        step(state, display, keyboard)
+        printStep(state)
+        step(state, display, keypad)
     }
     display.printScreen()
-}
-
-fun loadRom(state: State, filename: String) {
-    val f = File(filename)
-    val data = f.readBytes()
-    var address = 0x200
-    for (b in data) {
-        state.memSet(address, b.toInt())
-        address++
-    }
 }

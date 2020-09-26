@@ -17,13 +17,11 @@ internal class ScTest {
     fun run() {
         val state = State()
         val display = Display(64, 32)
-        val keyboard = DumbKeyboard()
-        loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
-        state.memRangeSet(FONT, FONT_ADDRESS)
+        val keyboard = DumbKeypad()
+        state.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
         var success = false
         var cycles = 0
-        state.jump(PC_START)
         while (state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
             step(state, display, keyboard)
             if (state.pc == SUCCESS_ADDRESS) {
