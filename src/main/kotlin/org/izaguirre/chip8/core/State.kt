@@ -1,3 +1,5 @@
+package org.izaguirre.chip8.core
+
 const val MEMORY_SIZE = 0x1000
 const val MEMORY_MASK = 0xfff
 const val VALUE_MASK = 0xff

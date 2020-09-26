@@ -1,3 +1,9 @@
+package org.izaguirre.chip8.core
+
+import org.izaguirre.chip8.core.PC_START
+import org.izaguirre.chip8.core.State
+import org.izaguirre.chip8.core.loadRom
+import org.izaguirre.chip8.core.step
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*

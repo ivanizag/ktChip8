@@ -1,3 +1,5 @@
+package org.izaguirre.chip8.core
+
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
@@ -34,8 +36,8 @@ internal class ScTest {
 
         assert(cycles < TIMEOUT_CYCLES)
         val error = state.memByte(BCD_ERROR_ADDRESS) * 100 +
-                state.memByte(BCD_ERROR_ADDRESS+1) * 10 +
-                state.memByte(BCD_ERROR_ADDRESS+2) * 1
+                state.memByte(BCD_ERROR_ADDRESS +1) * 10 +
+                state.memByte(BCD_ERROR_ADDRESS +2) * 1
         assertEquals(error, NO_ERROR_CODE)
         //assertEquals(error, 0)
         assert(success)

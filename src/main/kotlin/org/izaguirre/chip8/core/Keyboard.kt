@@ -1,6 +1,7 @@
-// TechRef 2.4
+package org.izaguirre.chip8.core
 
 interface Keyboard {
+    // TechRef 2.4
     fun isKeyPressed(key: Int): Boolean
     fun nextKey(): Int // Blocking
 

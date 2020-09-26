@@ -1,3 +1,5 @@
+package org.izaguirre.chip8.core
+
 // TechRef 2.3
 const val FONT_ADDRESS = 0x50
 const val FONT_HEIGHT = 5

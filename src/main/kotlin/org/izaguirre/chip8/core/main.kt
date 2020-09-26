@@ -1,3 +1,5 @@
+package org.izaguirre.chip8.core
+
 import java.io.File
 
 /*

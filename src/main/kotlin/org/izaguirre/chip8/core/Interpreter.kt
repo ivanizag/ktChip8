@@ -1,3 +1,5 @@
+package org.izaguirre.chip8.core
+
 import kotlin.random.Random
 
 const val PC_START = 0x200
