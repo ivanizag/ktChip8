@@ -44,8 +44,8 @@ class Display (
                 }
             }
         }
-        println()
-        printScreen()
+        //println()
+        //printScreen()
         return if (collision) 1 else 0
     }
 
