@@ -1,17 +1,18 @@
 import org.junit.jupiter.api.Test
-
 import org.junit.jupiter.api.Assertions.*
-
-const val SUCCESS_ADDRESS = 0x3c4
-const val END_ADDRESS = 0x450
-const val BCD_ERROR_ADDRESS = 0x452
-const val NO_ERROR_CODE = 123
-const val TIMEOUT_CYCLES = 10000
 
 internal class ScTest {
 
+    companion object {
+        const val SUCCESS_ADDRESS = 0x3c4
+        const val END_ADDRESS = 0x450
+        const val BCD_ERROR_ADDRESS = 0x452
+        const val NO_ERROR_CODE = 123
+        const val TIMEOUT_CYCLES = 10000
+    }
+
     @Test
-    fun step() {
+    fun run() {
         val state = State()
         val display = Display(64, 32)
         val keyboard = DumbKeyboard()
