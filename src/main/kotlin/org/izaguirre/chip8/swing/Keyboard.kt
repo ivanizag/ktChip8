@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent
 
 class Keyboard : Keypad, KeyAdapter() {
     private val keyPressed = BooleanArray(KEY_COUNT)
+    private var poolingRelease = false
+    private var lastRelease: Int? = null
 
     override fun keyPressed(e: KeyEvent?) {
         if (e != null) {
@@ -21,6 +23,7 @@ class Keyboard : Keypad, KeyAdapter() {
             val key = keyCodeToChip8(e.keyCode)
             if (key != null) {
                 keyPressed[key] = false
+                lastRelease = key
             }
         }
     }
@@ -54,8 +57,18 @@ class Keyboard : Keypad, KeyAdapter() {
         return keyPressed[key]
     }
 
-    override fun nextKey(): Int {
-        throw NotImplementedError()
+    override fun nextKey(): Int? {
+        if (poolingRelease) {
+            val key = lastRelease
+            if (key != null) {
+                poolingRelease = false
+                return key
+            }
+        } else {
+            poolingRelease = true
+            lastRelease = null
+        }
+        return null
     }
 
     companion object {

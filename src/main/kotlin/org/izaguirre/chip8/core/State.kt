@@ -37,6 +37,9 @@ class State {
     fun skip() {
         jump(pc+2)
     }
+    fun unskip() {
+        jump(pc-2)
+    }
 
     private var stack = IntArray(STACK_DEPTH)
     private var sp = 0

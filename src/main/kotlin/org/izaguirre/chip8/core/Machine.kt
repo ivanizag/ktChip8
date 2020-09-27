@@ -112,7 +112,15 @@ class Machine {
             }
             0xf -> when (kk) {
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
-                0x0a -> state.v[x] = keypad.nextKey() // LD Vx, K
+                0x0a -> { // LD Vx, K
+                    var key = keypad.nextKey()
+                    if (key == null) {
+                        // Block execution
+                        state.unskip()
+                    } else {
+                        state.v[x] = key
+                    }
+                }
                 0x15 -> state.dt = state.v[x] // LD DT, Vx
                 0x18 -> state.st = state.v[x] // LD ST, VX
                 0x1e -> { // ADD I, Vx

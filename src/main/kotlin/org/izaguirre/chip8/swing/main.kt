@@ -15,8 +15,8 @@ fun main() {
 
     //loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
     //state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
-    val rom = "outlaw.ch8"
-    machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/$rom")
+    //machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/outlaw.ch8")
+    machine.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/CONNECT4")
 
     val frame = JFrame()
     frame.title = "Chip8"
@@ -29,7 +29,7 @@ fun main() {
 
     Timer(40) {
         for (i in 0 until 20) {
-            machine.printStep()
+            //machine.printStep()
             machine.tickCpu()
         }
     }.start()
