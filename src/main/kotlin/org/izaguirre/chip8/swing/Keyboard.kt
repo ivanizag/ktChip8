@@ -20,7 +20,7 @@ class Keyboard : Keypad, KeyAdapter() {
         if (e != null) {
             val key = keyCodeToChip8(e.keyCode)
             if (key != null) {
-                keyPressed[key] = true
+                keyPressed[key] = false
             }
         }
     }
@@ -33,13 +33,13 @@ class Keyboard : Keypad, KeyAdapter() {
         KeyEvent.VK_4 -> 0xc
 
         KeyEvent.VK_Q -> 0x4
-        KeyEvent.VK_W -> 0x5
+        KeyEvent.VK_W, KeyEvent.VK_UP -> 0x5
         KeyEvent.VK_E -> 0x6
         KeyEvent.VK_R -> 0xd
 
-        KeyEvent.VK_A -> 0x7
-        KeyEvent.VK_S -> 0x8
-        KeyEvent.VK_D -> 0x9
+        KeyEvent.VK_A, KeyEvent.VK_LEFT -> 0x7
+        KeyEvent.VK_S, KeyEvent.VK_DOWN -> 0x8
+        KeyEvent.VK_D, KeyEvent.VK_RIGHT -> 0x9
         KeyEvent.VK_F -> 0xe
 
         KeyEvent.VK_Z -> 0xa

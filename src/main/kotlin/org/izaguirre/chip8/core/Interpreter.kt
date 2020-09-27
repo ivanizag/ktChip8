@@ -6,12 +6,22 @@ import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import kotlin.random.Random
 
+const val CYCLE_MS = 2 // Chip8 runs at 500Hz, 2ms per cycle
+const val CYCLES_PER_TIMER = 8 // Should be 60Hz we approx to 62,5Hz=1/(2*8ms)
+
 fun mod(x: Int, y: Int) = Math.floorMod(x, y)
 
 fun step(s: State, d: Display, k: Keypad) {
+    // TechRef 2.5 Timers
+    s.timerCycles++
+    if (s.timerCycles == CYCLES_PER_TIMER) {
+        s.timerCycles = 0
+        if (s.dt > 0) s.dt--
+        if (s.st > 0) s.st--
+    }
+
     // TechRef 3.0
     val opcode = s.memWord(s.pc)
-
     val nnn = opcode and 0xfff
     val n = opcode and 0xf
     val x = opcode shr 8 and 0xf
@@ -20,14 +30,13 @@ fun step(s: State, d: Display, k: Keypad) {
     val c = opcode shr 12 and 0xf
     /* Opcodes can be cnnn, cxkk or cxyn */
 
-    s.skip()
-
     // TechRef 3.1
+    s.skip()
     when (c) {
         0x0 -> when (nnn) {
-            0xe0 -> d.cls() // CLS
-            0xee -> s.pop() // RET
-            else -> throw Exception("SYS not supported") // SYS
+            0x0e0 -> d.cls() // CLS
+            0x0ee -> s.pop() // RET
+            else -> throw Exception("SYS $opcode not supported") // SYS
         }
         0x1 -> s.jump(nnn) // JP addr
         0x2 -> { // CALL addr
@@ -86,7 +95,7 @@ fun step(s: State, d: Display, k: Keypad) {
             0x18 -> s.st = s.v[x] // LD ST, VX
             0x1e -> { // ADD I, Vx
                  val r = s.i + s.v[x]
-                 s.v[x] = r and MEMORY_MASK
+                 s.i = r and MEMORY_MASK
                  s.v[0xf] = if (r > MEMORY_MASK) 1 else 0
             }
             0x29 -> s.i = (FONT_ADDRESS + s.v[x] * FONT_HEIGHT) and MEMORY_MASK // LD F, Vx
@@ -152,8 +161,8 @@ fun disasm(opcode: Int): String {
     // TechRef 3.1
     return when (c) {
         0x0 -> when (nnn) {
-            0xe0 -> "CLS"
-            0xee -> "RET"
+            0x0e0 -> "CLS"
+            0x0ee -> "RET"
             else -> "SYS $snnn"
         }
         0x1 -> "JP $snnn"

@@ -27,8 +27,11 @@ class State {
     var v = IntArray(REGISTER_COUNT) // Must be 0 to 255
     var v48 = IntArray(REGISTER48_COUNT) // Must be 0 to 255
     var i = 0
+
+    // TechRef 2.5 Timers
     var dt = 0
     var st = 0
+    var timerCycles = 0
 
     var pc = PC_START
         private set

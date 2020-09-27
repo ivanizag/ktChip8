@@ -20,9 +20,8 @@ class Display (
             for (w in 0..7) {
                 val current = getPixel(x+w, y+h)
                 val new = (pattern shr (7-w) and 1) == 1
-                if (new != current) {
-                    setPixel(x+w, y+h, new)
-                } else {
+                setPixel(x+w, y+h, current xor new)
+                if (new == current) {
                     collision = collision or new // as new==current
                 }
             }
