@@ -21,7 +21,7 @@ internal class ScTest {
         var success = false
         var cycles = 0
         while (machine.state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
-            machine.step()
+            machine.tickCpu()
             if (machine.state.pc == SUCCESS_ADDRESS) {
                 success = true
             }

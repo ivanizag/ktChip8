@@ -27,7 +27,7 @@ internal class Corax89Test {
                 if (machine.state.i == OK_IMAGE_ADDRESS) okCount++
                 if (machine.state.i == ERR_IMAGE_ADDRESS) errCount++
             }
-            machine.step()
+            machine.tickCpu()
             cycles++
         }
 

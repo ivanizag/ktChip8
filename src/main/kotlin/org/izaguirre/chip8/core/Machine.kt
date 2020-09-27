@@ -7,6 +7,19 @@ import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
 import kotlin.random.Random
 
+/*
+See:
+    http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+    http://devernay.free.fr/hacks/chip8/schip.txt
+    https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference
+    http://www.komkon.org/~dekogel/vision8.html
+
+Games:
+      https://github.com/JohnEarnest/chip8Archive/tree/master/roms
+
+ */
+
+
 class Machine {
     val state = State()
     val display = Display(64, 32)
@@ -22,15 +35,13 @@ class Machine {
         }
     }
 
-    fun step() {
+    fun tickTimer() {
         // TechRef 2.5 Timers
-        state.timerCycles++
-        if (state.timerCycles == CYCLES_PER_TIMER) {
-            state.timerCycles = 0
-            if (state.dt > 0) state.dt--
-            if (state.st > 0) state.st--
-        }
+        if (state.dt > 0) state.dt--
+        if (state.st > 0) state.st--
+    }
 
+    fun tickCpu() {
         // TechRef 3.0
         val opcode = state.memWord(state.pc)
         val nnn = opcode and 0xfff
@@ -222,10 +233,4 @@ class Machine {
             else -> "???"
         }
     }
-
-    companion object {
-        //const val CYCLE_MS = 2 // Chip8 runs at 500Hz, 2ms per cycle
-        const val CYCLES_PER_TIMER = 8 // Should be 60Hz we approx to 62,5Hz=1/(2*8ms)
-    }
-
 }

@@ -21,18 +21,24 @@ fun main() {
     frame.title = "Chip8"
     frame.add(board)
     frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-    frame.size = Dimension(64*20 + 30,32*20 + 100)
+    frame.size = Dimension(64 * 20 + 30, 32 * 20 + 100)
     frame.setLocationRelativeTo(null)
     frame.isVisible = true
     frame.addKeyListener(keyboard)
 
-    val timer = Timer(2) {
-        machine.printStep()
-        machine.step()
+    Timer(40) {
+        for (i in 0 until 20) {
+            machine.printStep()
+            machine.tickCpu()
+        }
+    }.start()
+
+    Timer(17) {
+        machine.tickTimer()
         if (machine.display.changed) {
             board.repaint()
             machine.display.changed = false
         }
-    }
-    timer.start()
+    }.start()
+
 }
