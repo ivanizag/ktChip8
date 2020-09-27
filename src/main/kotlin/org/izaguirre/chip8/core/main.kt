@@ -17,15 +17,12 @@ Games:
 
 
 fun main() {
+    var machine = Machine()
+    machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
-    val state = State()
-    val display = Display(64, 32)
-    val keypad = DumbKeypad()
-    state.loadRom("src/test/resources/sctest/SCTEST.CH8")
-
-    while (state.pc != 0x450) {
-        printStep(state)
-        step(state, display, keypad)
+    while (machine.state.pc != 0x450) {
+        machine.printStep()
+        machine.step()
     }
-    display.printScreen()
+    machine.display.printScreen()
 }

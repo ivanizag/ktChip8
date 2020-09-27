@@ -15,27 +15,25 @@ internal class ScTest {
 
     @Test
     fun run() {
-        val state = State()
-        val display = Display(64, 32)
-        val keyboard = DumbKeypad()
-        state.loadRom("src/test/resources/sctest/SCTEST.CH8")
+        var machine = Machine()
+        machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
         var success = false
         var cycles = 0
-        while (state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
-            step(state, display, keyboard)
-            if (state.pc == SUCCESS_ADDRESS) {
+        while (machine.state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
+            machine.step()
+            if (machine.state.pc == SUCCESS_ADDRESS) {
                 success = true
             }
             cycles++
         }
 
-        display.printScreen()
+        machine.display.printScreen()
 
         assert(cycles < TIMEOUT_CYCLES)
-        val error = state.memByte(BCD_ERROR_ADDRESS) * 100 +
-                state.memByte(BCD_ERROR_ADDRESS +1) * 10 +
-                state.memByte(BCD_ERROR_ADDRESS +2) * 1
+        val error = machine.state.memByte(BCD_ERROR_ADDRESS) * 100 +
+                machine.state.memByte(BCD_ERROR_ADDRESS +1) * 10 +
+                machine.state.memByte(BCD_ERROR_ADDRESS +2) * 1
         assertEquals(error, NO_ERROR_CODE)
         //assertEquals(error, 0)
         assert(success)

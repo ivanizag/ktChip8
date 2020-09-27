@@ -45,22 +45,12 @@ class State {
     private var stack = IntArray(STACK_DEPTH)
     private var sp = 0
     fun push() {
-        sp = mod(sp + 1, STACK_DEPTH)
+        sp = Math.floorMod(sp + 1, STACK_DEPTH)
         stack[sp] = pc
     }
     fun pop() {
         pc = stack[sp]
-        sp = mod(sp - 1, STACK_DEPTH)
-    }
-
-    fun loadRom(filename: String) {
-        val f = File(filename)
-        val data = f.readBytes()
-        var address = 0x200
-        for (b in data) {
-            memSet(address, b.toInt())
-            address++
-        }
+        sp = Math.floorMod(sp - 1, STACK_DEPTH)
     }
 
     companion object {

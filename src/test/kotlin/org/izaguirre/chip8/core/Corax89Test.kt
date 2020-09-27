@@ -15,25 +15,23 @@ internal class Korax89Test {
 
     @Test
     fun run() {
-        val state = State()
-        val display = Display(64, 32)
-        val keyboard = DumbKeypad()
-        state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
+        var machine = Machine()
+        machine.loadRom("src/test/resources/corax89test/test_opcode.ch8")
 
         var okCount = 0
         var errCount = 0
         var cycles = 0
-        while (state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
-            if ((state.memWord(state.pc) and 0xf000) == 0xd000 /*DRW*/) {
+        while (machine.state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {
+            if ((machine.state.memWord(machine.state.pc) and 0xf000) == 0xd000 /*DRW*/) {
                 // We will draw
-                if (state.i == OK_IMAGE_ADDRESS) okCount++
-                if (state.i == ERR_IMAGE_ADDRESS) errCount++
+                if (machine.state.i == OK_IMAGE_ADDRESS) okCount++
+                if (machine.state.i == ERR_IMAGE_ADDRESS) errCount++
             }
-            step(state, display, keyboard)
+            machine.step()
             cycles++
         }
 
-        display.printScreen()
+        machine.display.printScreen()
 
         assert(cycles < TIMEOUT_CYCLES)
         assertEquals(okCount+errCount, TESTS_COUNT)

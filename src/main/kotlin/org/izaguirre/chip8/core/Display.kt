@@ -5,7 +5,7 @@ class Display (
         val width: Int,
         val height: Int,
 ) {
-    var changed = false
+    var changed = true
 
     private var frameBuffer = Array(height) {BooleanArray(width)}
 

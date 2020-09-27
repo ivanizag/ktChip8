@@ -1,25 +1,22 @@
 package org.izaguirre.chip8.swing
 
-import org.izaguirre.chip8.core.Display
-import org.izaguirre.chip8.core.State
-import org.izaguirre.chip8.core.printStep
-import org.izaguirre.chip8.core.step
+import org.izaguirre.chip8.core.*
 import java.awt.Dimension
 import java.awt.event.ActionListener
 import javax.swing.JFrame
 import javax.swing.Timer
 
 fun main() {
-    val state = State()
-    val display = Display(64, 32)
+    val machine = Machine()
     val keyboard = Keyboard()
-    val board = Board(display, 20, 20)
+    machine.keypad = keyboard
+    val board = Board(machine, 20, 20)
     board.addKeyListener(keyboard)
 
     //loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
     //state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
     val rom = "BRIX"
-    state.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/$rom")
+    machine.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/$rom")
 
     val frame = JFrame()
     frame.title = "Chip8"
@@ -31,11 +28,11 @@ fun main() {
     frame.addKeyListener(keyboard)
 
     val timer = Timer(2, ActionListener {
-        printStep(state)
-        step(state, display, keyboard)
-        if (display.changed) {
+        machine.printStep()
+        machine.step()
+        if (machine.display.changed) {
             board.repaint()
-            display.changed = false
+            machine.display.changed = false
         }
     })
     timer.start()
