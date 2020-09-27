@@ -3,7 +3,7 @@ package org.izaguirre.chip8.core
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
-internal class Korax89Test {
+internal class Corax89Test {
 
     companion object {
         const val END_ADDRESS = 0x3dc
@@ -15,7 +15,7 @@ internal class Korax89Test {
 
     @Test
     fun run() {
-        var machine = Machine()
+        val machine = Machine()
         machine.loadRom("src/test/resources/corax89test/test_opcode.ch8")
 
         var okCount = 0

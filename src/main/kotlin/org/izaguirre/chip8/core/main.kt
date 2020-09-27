@@ -1,7 +1,5 @@
 package org.izaguirre.chip8.core
 
-import java.io.File
-
 /*
 See:
     http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
@@ -14,10 +12,8 @@ Games:
 
  */
 
-
-
 fun main() {
-    var machine = Machine()
+    val machine = Machine()
     machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
     while (machine.state.pc != 0x450) {

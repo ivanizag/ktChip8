@@ -2,7 +2,6 @@ package org.izaguirre.chip8.swing
 
 import org.izaguirre.chip8.core.*
 import java.awt.Dimension
-import java.awt.event.ActionListener
 import javax.swing.JFrame
 import javax.swing.Timer
 
@@ -27,13 +26,13 @@ fun main() {
     frame.isVisible = true
     frame.addKeyListener(keyboard)
 
-    val timer = Timer(2, ActionListener {
+    val timer = Timer(2) {
         machine.printStep()
         machine.step()
         if (machine.display.changed) {
             board.repaint()
             machine.display.changed = false
         }
-    })
+    }
     timer.start()
 }

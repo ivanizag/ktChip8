@@ -2,21 +2,17 @@ package org.izaguirre.chip8.core
 
 import org.izaguirre.chip8.core.Display.Companion.FONT
 import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
-import java.io.File
 
 class State {
     // TechRef 2.1 Memory
     private var mem = IntArray(MEMORY_SIZE)
 
     init {
-        memRangeSet(FONT, FONT_ADDRESS)
+        FONT.copyInto(mem, FONT_ADDRESS)
     }
 
     fun memSet(address: Int, value: Int) {
         mem[address and MEMORY_MASK] = value
-    }
-    fun memRangeSet(range: IntArray, startAddress: Int) {
-        range.copyInto(mem, startAddress)
     }
 
     fun memByte(address: Int) = mem[address and MEMORY_MASK] and VALUE_MASK

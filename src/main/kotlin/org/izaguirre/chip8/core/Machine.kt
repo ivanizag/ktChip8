@@ -224,7 +224,7 @@ class Machine {
     }
 
     companion object {
-        const val CYCLE_MS = 2 // Chip8 runs at 500Hz, 2ms per cycle
+        //const val CYCLE_MS = 2 // Chip8 runs at 500Hz, 2ms per cycle
         const val CYCLES_PER_TIMER = 8 // Should be 60Hz we approx to 62,5Hz=1/(2*8ms)
     }
 

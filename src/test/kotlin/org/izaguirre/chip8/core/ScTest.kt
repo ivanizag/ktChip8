@@ -15,7 +15,7 @@ internal class ScTest {
 
     @Test
     fun run() {
-        var machine = Machine()
+        val machine = Machine()
         machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
         var success = false
