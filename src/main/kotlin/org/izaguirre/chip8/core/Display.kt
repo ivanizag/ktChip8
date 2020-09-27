@@ -5,8 +5,6 @@ class Display (
         val width: Int,
         val height: Int,
 ) {
-    var changed = true
-
     private var frameBuffer = Array(height) {BooleanArray(width)}
 
     fun cls() {
@@ -26,7 +24,6 @@ class Display (
                 }
             }
         }
-        changed = true
         return if (collision) 1 else 0
     }
 

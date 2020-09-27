@@ -6,7 +6,7 @@ import java.awt.Graphics
 import javax.swing.JPanel
 
 class Board (
-        private val machine: Machine,
+        private val display: PersistanceDisplay,
         private val dotWidth: Int,
         private val dotHeight: Int,
 ) : JPanel() {
@@ -14,13 +14,9 @@ class Board (
         super.paintComponent(g)
         if (g == null) return
 
-        for (y in 0 until machine.display.height) {
-            for (x in 0 until machine.display.width) {
-                if (machine.display.getPixel(x, y)) {
-                    g.color = Color.DARK_GRAY
-                } else {
-                    g.color = Color.LIGHT_GRAY
-                }
+        for (y in 0 until display.height) {
+            for (x in 0 until display.width) {
+                g.color = display.getPixelColor(x, y)
                 g.fillRect(x * dotWidth, y * dotHeight, dotWidth-1, dotHeight-1)
             }
         }

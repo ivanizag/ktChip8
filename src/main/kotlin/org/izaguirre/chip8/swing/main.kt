@@ -9,13 +9,14 @@ fun main() {
     val machine = Machine()
     val keyboard = Keyboard()
     machine.keypad = keyboard
-    val board = Board(machine, 20, 20)
+    val persistanceDisplay = PersistanceDisplay()
+    val board = Board(persistanceDisplay, 20, 20)
     board.addKeyListener(keyboard)
 
     //loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
     //state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
-    val rom = "BRIX"
-    machine.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/$rom")
+    val rom = "outlaw.ch8"
+    machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/$rom")
 
     val frame = JFrame()
     frame.title = "Chip8"
@@ -35,10 +36,8 @@ fun main() {
 
     Timer(17) {
         machine.tickTimer()
-        if (machine.display.changed) {
-            board.repaint()
-            machine.display.changed = false
-        }
+        persistanceDisplay.update(machine.display)
+        board.repaint()
     }.start()
 
 }
