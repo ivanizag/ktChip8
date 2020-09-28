@@ -21,9 +21,15 @@ Games:
 
 
 class Machine {
-    val state = State()
+    var state = State()
+        private set
     val display = Display(64, 32)
     var keypad: Keypad = DumbKeypad()
+
+    fun reset() {
+        state = State()
+        display.cls()
+    }
 
     fun loadRom(filename: String) {
         val f = File(filename)
@@ -34,6 +40,7 @@ class Machine {
             address++
         }
     }
+
 
     fun tickTimer() {
         // TechRef 2.5 Timers

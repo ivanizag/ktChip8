@@ -1,12 +1,10 @@
 package org.izaguirre.chip8.swing
 
-import org.izaguirre.chip8.core.Machine
-import java.awt.Color
 import java.awt.Graphics
 import javax.swing.JPanel
 
 class Board (
-        private val display: PersistanceDisplay,
+        private val display: PersistenceDisplay,
         private val dotWidth: Int,
         private val dotHeight: Int,
 ) : JPanel() {
