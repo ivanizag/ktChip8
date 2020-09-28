@@ -2,13 +2,25 @@ package org.izaguirre.chip8.core
 
 // TechRef 2.3
 class Display (
-        val width: Int,
-        val height: Int,
+        var width: Int,
+        var height: Int,
 ) {
     private var frameBuffer = Array(height) {BooleanArray(width)}
 
     fun cls() {
         frameBuffer = Array(height) {BooleanArray(width)}
+    }
+
+    fun lores() {
+        width = 64
+        height = 32
+        cls()
+    }
+
+    fun hires() {
+        width = 128
+        height = 64
+        cls()
     }
 
     fun sprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {

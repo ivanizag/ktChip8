@@ -13,7 +13,7 @@ import kotlin.system.exitProcess
 
 class UI: JFrame() {
     val persistenceDisplay = PersistenceDisplay()
-    val board = Board(persistenceDisplay, 20, 20)
+    val board = Board(persistenceDisplay)
 
     init {
         title = "Chip8"

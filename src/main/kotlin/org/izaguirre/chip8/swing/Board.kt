@@ -5,12 +5,14 @@ import javax.swing.JPanel
 
 class Board (
         private val display: PersistenceDisplay,
-        private val dotWidth: Int,
-        private val dotHeight: Int,
 ) : JPanel() {
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)
         if (g == null) return
+
+        if (display.height == 0 || display.width ==0) return
+        val dotHeight = height / display.height
+        val dotWidth = width / display.width
 
         for (y in 0 until display.height) {
             for (x in 0 until display.width) {

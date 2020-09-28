@@ -28,7 +28,7 @@ class Machine {
 
     fun reset() {
         state = State()
-        display.cls()
+        display.lores()
     }
 
     fun loadRom(filename: String) {
@@ -40,7 +40,6 @@ class Machine {
             address++
         }
     }
-
 
     fun tickTimer() {
         // TechRef 2.5 Timers
@@ -65,7 +64,9 @@ class Machine {
             0x0 -> when (nnn) {
                 0x0e0 -> display.cls() // CLS
                 0x0ee -> state.pop() // RET
-                else -> throw Exception("SYS $opcode not supported") // SYS
+                0x0fe -> display.lores() // LOW
+                0x0ff -> display.hires() // HIGH
+                else -> throw Exception("SYS ${opcode.toString(16).toUpperCase()} not supported") // SYS
             }
             0x1 -> state.jump(nnn) // JP addr
             0x2 -> { // CALL addr

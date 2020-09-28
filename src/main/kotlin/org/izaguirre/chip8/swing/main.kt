@@ -6,6 +6,7 @@ import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
+import java.io.File
 import javax.swing.*
 import kotlin.system.exitProcess
 
@@ -32,9 +33,8 @@ fun main() {
     ui.addKeyListener(keyboard)
     val fc = JFileChooser()
     fc.font = Font("TimesRoman", Font.PLAIN, 100)
+    fc.currentDirectory = File("/home/casa/code/kotlin/chip8Archive/roms")
 
-    //loadRom(state, "src/test/resources/sctest/SCTEST.CH8")
-    //state.loadRom("src/test/resources/corax89test/test_opcode.ch8")
     //machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/outlaw.ch8")
     machine.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/CONNECT4")
 
