@@ -10,29 +10,27 @@ class Keyboard : Keypad, KeyAdapter() {
     private var lastRelease: Int? = null
 
     override fun keyPressed(e: KeyEvent?) {
-        if (e != null) {
-            val key = keyCodeToChip8(e.keyCode)
-            if (key != null) {
-                keyPressed[key] = true
+        e?.let {
+            keyCodeToChip8(e.keyCode)?.let {
+                keyPressed[it] = true
             }
         }
     }
 
     override fun keyReleased(e: KeyEvent?) {
-        if (e != null) {
-            val key = keyCodeToChip8(e.keyCode)
-            if (key != null) {
-                keyPressed[key] = false
-                lastRelease = key
+        e?.let {
+            keyCodeToChip8(e.keyCode)?.let {
+                keyPressed[it] = false
+                lastRelease = it
             }
         }
     }
 
     private fun keyCodeToChip8(code: Int) = when (code) {
         // Chip 8 Reference 2.3
-        KeyEvent.VK_1 -> 0x0
-        KeyEvent.VK_2 -> 0x1
-        KeyEvent.VK_3 -> 0x2
+        KeyEvent.VK_1 -> 0x1
+        KeyEvent.VK_2 -> 0x2
+        KeyEvent.VK_3 -> 0x3
         KeyEvent.VK_4 -> 0xc
 
         KeyEvent.VK_Q -> 0x4

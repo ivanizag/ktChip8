@@ -26,18 +26,12 @@ class UI: JFrame() {
         isVisible = true
     }
 
-    private fun createToolBar(): JToolBar {
-        val toolBar = JToolBar()
-        val loadButton = JButton("Load")
-        toolBar.add(loadButton)
-
-        val exitButton = JButton("Exit")
-        toolBar.add(exitButton)
-        exitButton.addActionListener {
-            exitProcess(0)
-        }
-
-        return toolBar
+    private fun createToolBar() = JToolBar().apply {
+        add(JButton("Load"))
+        add(JButton("Exit").apply {
+            addActionListener {
+                exitProcess(0)
+            }
+        })
     }
-
 }

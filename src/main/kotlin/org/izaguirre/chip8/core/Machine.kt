@@ -14,8 +14,10 @@ See:
     https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference
     http://www.komkon.org/~dekogel/vision8.html
 
+
 Games:
       https://github.com/JohnEarnest/chip8Archive/tree/master/roms
+      https://github.com/loktar00/chip8/tree/master/roms
 
  */
 

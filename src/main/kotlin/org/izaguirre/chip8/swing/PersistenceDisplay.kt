@@ -3,6 +3,7 @@ package org.izaguirre.chip8.swing
 import org.izaguirre.chip8.core.Display
 import org.izaguirre.chip8.core.Machine
 import java.awt.Color
+import kotlin.properties.Delegates
 
 class PersistenceDisplay() {
     var height = 0
@@ -11,6 +12,10 @@ class PersistenceDisplay() {
         private set
     private var frameBuffer = IntArray(0)
     var decay = DECAY
+        set(value) {
+            field = value
+            frameBuffer.fill(0)
+        }
 
     fun update(d: Display) {
 
@@ -36,14 +41,12 @@ class PersistenceDisplay() {
         }
     }
 
-    fun getPixelColor(x: Int, y:Int): Color {
-        return decay[frameBuffer[y*width+x]]
-    }
+    fun getPixelColor(x: Int, y:Int) = decay[frameBuffer[y*width+x]]
 
     companion object {
         val NO_DECAY = Array<Color>(2) {Color(50, 50 + it*200, 50)}
-        val DECAY = Array<Color>(10) { Color(50, 50 + it*20, 50)}
-        val DECAY_LARGE = Array<Color>(50) { Color(50, 50 + it*4, 50)}
+        val DECAY = Array<Color>(11) { Color(50, 50 + it*20, 50)}
+        val DECAY_LARGE = Array<Color>(51) { Color(50, 50 + it*4, 50)}
     }
 
 }

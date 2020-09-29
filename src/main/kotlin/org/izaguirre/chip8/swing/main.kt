@@ -10,20 +10,6 @@ import java.io.File
 import javax.swing.*
 import kotlin.system.exitProcess
 
-fun createToolBar(): JToolBar {
-    var toolBar = JToolBar()
-    var loadButton = JButton("Load")
-    toolBar.add(loadButton)
-
-    var exitButton = JButton("Exit")
-    toolBar.add(exitButton)
-    exitButton.addActionListener {
-        exitProcess(0)
-    }
-
-    return toolBar
-}
-
 fun main() {
     val machine = Machine()
     val keyboard = Keyboard()
@@ -31,22 +17,21 @@ fun main() {
 
     val ui = UI()
     ui.addKeyListener(keyboard)
-    val fc = JFileChooser()
-    fc.font = Font("TimesRoman", Font.PLAIN, 100)
-    fc.currentDirectory = File("/home/casa/code/kotlin/chip8Archive/roms")
+    val fc = JFileChooser().apply {
+        font = Font("TimesRoman", Font.PLAIN, 100)
+        currentDirectory = File("/home/casa/code/kotlin/chip8Archive/roms")
+    }
 
-    //machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/outlaw.ch8")
-    machine.loadRom("/home/casa/code/kotlin/chip8Archive/moreroms/CONNECT4")
+    machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
 
     ui.addKeyListener(object: KeyAdapter() {
         override fun keyReleased(e: KeyEvent?) {
             when (e?.keyCode) {
                 KeyEvent.VK_F1 -> {
                     if (fc.showOpenDialog(ui) == JFileChooser.APPROVE_OPTION) {
-                        val file = fc.selectedFile
-                        if (file != null) {
+                        fc.selectedFile?.let{
                             machine.reset()
-                            machine.loadRom(file.absolutePath)
+                            machine.loadRom(it.absolutePath)
                         }
                     }
                 }
