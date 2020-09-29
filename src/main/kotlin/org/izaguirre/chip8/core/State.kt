@@ -58,7 +58,7 @@ class State {
         const val VALUE_MASK = 0xff
         const val REGISTER_COUNT = 16
         const val REGISTER48_COUNT = 8
-        const val STACK_DEPTH = 16
+        const val STACK_DEPTH = 16 // 12 in CHIP8, 16 in SCHIP
         const val PC_START = 0x200
     }
 }

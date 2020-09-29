@@ -13,6 +13,7 @@ See:
     http://devernay.free.fr/hacks/chip8/schip.txt
     https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference
     http://www.komkon.org/~dekogel/vision8.html
+    https://github.com/JohnEarnest/Octo/blob/gh-pages/docs/XO-ChipSpecification.md
 
 
 Games:
@@ -25,7 +26,7 @@ Games:
 class Machine {
     var state = State()
         private set
-    val display = Display(64, 32)
+    val display = Display()
     var keypad: Keypad = DumbKeypad()
 
     fun reset() {
@@ -108,7 +109,7 @@ class Machine {
                     state.v[0xf] = if (state.v[x] > 127) 1 else 0
                     state.v[x] = (state.v[x] shl 1) and VALUE_MASK
                 }
-                else -> throw Exception("Unknown opcode")
+                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0x9 -> if (state.v[x] != state.v[y]) state.skip() // SNE Vx, Vy
             0xa -> state.i = nnn // LD I, addr
@@ -118,9 +119,10 @@ class Machine {
             0xe -> when (kk) {
                 0x9e -> if (keypad.isKeyPressed(state.v[x])) state.skip() // SKP Vx
                 0xa1 -> if (!keypad.isKeyPressed(state.v[x])) state.skip() // SKNP Vx
-                else -> throw Exception("Unknown opcode")
+                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0xf -> when (kk) {
+                0x02 -> {} // AUDIO Do nothing
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
                 0x0a -> { // LD Vx, K
                     var key = keypad.nextKey()
@@ -167,9 +169,9 @@ class Machine {
                         state.v[i] = state.v48[i]
                     }
                 }
-                else -> throw Exception("Unknown opcode")
+                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
-            else -> throw Exception("Unknown opcode")
+            else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
         }
     }
 
@@ -203,6 +205,8 @@ class Machine {
             0x0 -> when (nnn) {
                 0x0e0 -> "CLS"
                 0x0ee -> "RET"
+                0x0fe -> "LOW" // SCHIP
+                0x0ff -> "HIGH" // SCHIP
                 else -> "SYS $snnn"
             }
             0x1 -> "JP $snnn"
@@ -235,6 +239,7 @@ class Machine {
                 else -> "???"
             }
             0xf -> when (kk) {
+                0x02 -> "AUDIO" // OCTO
                 0x07 -> "LD V${sx}, DT"
                 0x0a -> "LD V${sx}, K"
                 0x15 -> "LD DT, V${sx}"
@@ -244,8 +249,8 @@ class Machine {
                 0x33 -> "LD B, V${sx}"
                 0x55 -> "LD [I], V${sx}"
                 0x65 -> "LD V${sx}, [I]"
-                0x75 -> "LD R, V${sx}"
-                0x85 -> "LD V${sx}, R"
+                0x75 -> "LD R, V${sx}" // SCHIP
+                0x85 -> "LD V${sx}, R" // SCHIP
                 else -> "???"
             }
             else -> "???"

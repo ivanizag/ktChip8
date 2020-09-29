@@ -1,14 +1,11 @@
 package org.izaguirre.chip8.swing
 
 import org.izaguirre.chip8.core.*
-import java.awt.BorderLayout
-import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.io.File
 import javax.swing.*
-import kotlin.system.exitProcess
 
 fun main() {
     val machine = Machine()
@@ -22,7 +19,8 @@ fun main() {
         currentDirectory = File("/home/casa/code/kotlin/chip8Archive/roms")
     }
 
-    machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
+    //machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
+    machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/trucksimul8or.ch8")
 
     ui.addKeyListener(object: KeyAdapter() {
         override fun keyReleased(e: KeyEvent?) {

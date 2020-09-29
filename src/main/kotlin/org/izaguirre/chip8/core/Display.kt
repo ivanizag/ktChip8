@@ -2,9 +2,10 @@ package org.izaguirre.chip8.core
 
 // TechRef 2.3
 class Display (
-        var width: Int,
-        var height: Int,
 ) {
+    var isHires = false
+    var width = 64
+    var height = 32
     private var frameBuffer = Array(height) {BooleanArray(width)}
 
     fun cls() {
@@ -12,18 +13,24 @@ class Display (
     }
 
     fun lores() {
+        isHires = false
         width = 64
         height = 32
         cls()
     }
 
     fun hires() {
+        isHires = true
         width = 128
         height = 64
         cls()
     }
 
     fun sprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {
+        if (n==0 && isHires) {
+            wideSprite(s, i, x, y)
+        }
+
         var collision = false
         for (h in 0 until n) {
            val pattern = s.memByte(i+h)
@@ -38,6 +45,24 @@ class Display (
         }
         return if (collision) 1 else 0
     }
+
+    fun wideSprite(s: State, i: Int, x: Int, y: Int): Int {
+        var collision = false
+        for (h in 0 until 16) {
+            val pattern = s.memWord(i+2*h)
+            for (w in 0 until 16) {
+                val current = getPixel(x+w, y+h)
+                val new = (pattern shr (15-w) and 1) == 1
+                setPixel(x+w, y+h, current xor new)
+                if (new == current) {
+                    collision = collision or new // as new==current
+                }
+            }
+        }
+        return if (collision) 1 else 0
+    }
+
+
 
     fun getPixel(x: Int, y: Int) = frameBuffer[y.rem(height)][x.rem(width)]
     private fun setPixel(x: Int, y: Int, v: Boolean) {
