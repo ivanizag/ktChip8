@@ -2,6 +2,8 @@ package org.izaguirre.chip8.core
 
 import org.izaguirre.chip8.core.Display.Companion.FONT
 import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
+import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT
+import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
 
 class State {
     // TechRef 2.1 Memory
@@ -9,6 +11,7 @@ class State {
 
     init {
         FONT.copyInto(mem, FONT_ADDRESS)
+        LARGE_FONT.copyInto(mem, LARGE_FONT_ADDRESS)
     }
 
     fun memSet(address: Int, value: Int) {

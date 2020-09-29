@@ -2,6 +2,8 @@ package org.izaguirre.chip8.core
 
 import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
 import org.izaguirre.chip8.core.Display.Companion.FONT_HEIGHT
+import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
+import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_HEIGHT
 import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
@@ -17,9 +19,9 @@ See:
 
 
 Games:
-      https://github.com/JohnEarnest/chip8Archive/tree/master/roms
-      https://github.com/loktar00/chip8/tree/master/roms
-
+    https://github.com/JohnEarnest/chip8Archive/tree/master/roms
+    https://github.com/loktar00/chip8/tree/master/roms
+    https://www.hpcalc.org/hp48/games/chip/
  */
 
 
@@ -122,6 +124,7 @@ class Machine {
                 else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0xf -> when (kk) {
+                0x01 -> throw Exception("Octo drawing planes not supported")
                 0x02 -> {} // AUDIO Do nothing
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
                 0x0a -> { // LD Vx, K
@@ -141,6 +144,7 @@ class Machine {
                      state.v[0xf] = if (r > MEMORY_MASK) 1 else 0
                 }
                 0x29 -> state.i = (FONT_ADDRESS + state.v[x] * FONT_HEIGHT) and MEMORY_MASK // LD F, Vx
+                0x30 -> state.i = (LARGE_FONT_ADDRESS + state.v[x] * LARGE_FONT_HEIGHT) and MEMORY_MASK // LD HF, Vx
                 0x33 -> { // LD B, Vx
                     var vx = state.v[x]
                     state.memSet(state.i + 2, vx.rem(10))
@@ -239,6 +243,7 @@ class Machine {
                 else -> "???"
             }
             0xf -> when (kk) {
+                0x01 -> "PLANE $sx" // OCTO
                 0x02 -> "AUDIO" // OCTO
                 0x07 -> "LD V${sx}, DT"
                 0x0a -> "LD V${sx}, K"
@@ -246,6 +251,7 @@ class Machine {
                 0x18 -> "LD ST, V${sx}"
                 0x1e -> "ADD I, V${sx}"
                 0x29 -> "LD F, V${sx}"
+                0x29 -> "LD HF, V${sx}"
                 0x33 -> "LD B, V${sx}"
                 0x55 -> "LD [I], V${sx}"
                 0x65 -> "LD V${sx}, [I]"
