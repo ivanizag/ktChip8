@@ -1,10 +1,13 @@
 package org.izaguirre.chip8.core
 
+import org.izaguirre.chip8.core.Display.Companion.FONT
 import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
 import org.izaguirre.chip8.core.Display.Companion.FONT_HEIGHT
+import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_HEIGHT
 import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
+import org.izaguirre.chip8.core.State.Companion.MEMORY_SIZE
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
 import kotlin.random.Random
@@ -38,12 +41,11 @@ class Machine {
 
     fun loadRom(filename: String) {
         val f = File(filename)
-        val data = f.readBytes()
-        var address = 0x200
-        for (b in data) {
-            state.memSet(address, b.toInt())
-            address++
-        }
+        val dataBytes = f.readBytes()
+        val data = dataBytes.map {it.toInt()}.toIntArray()
+        state.memCopy(data, 0x200)
+        state.memCopy(FONT, FONT_ADDRESS)
+        state.memCopy(LARGE_FONT, LARGE_FONT_ADDRESS)
     }
 
     fun tickTimer() {
@@ -124,6 +126,10 @@ class Machine {
                 else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0xf -> when (kk) {
+                0x00 -> { // LD I, longaddr
+                    state.i = state.memWord(state.pc)
+                    state.skip()
+                }
                 0x01 -> throw Exception("Octo drawing planes not supported")
                 0x02 -> {} // AUDIO Do nothing
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
@@ -243,6 +249,7 @@ class Machine {
                 else -> "???"
             }
             0xf -> when (kk) {
+                0x00 -> "LD I, nnnn" // OCTO
                 0x01 -> "PLANE $sx" // OCTO
                 0x02 -> "AUDIO" // OCTO
                 0x07 -> "LD V${sx}, DT"

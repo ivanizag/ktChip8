@@ -7,15 +7,13 @@ import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
 
 class State {
     // TechRef 2.1 Memory
-    private var mem = IntArray(MEMORY_SIZE)
-
-    init {
-        FONT.copyInto(mem, FONT_ADDRESS)
-        LARGE_FONT.copyInto(mem, LARGE_FONT_ADDRESS)
-    }
+    private var mem = IntArray(MEMORY_SIZE_OCTO)
 
     fun memSet(address: Int, value: Int) {
         mem[address and MEMORY_MASK] = value
+    }
+    fun memCopy(data: IntArray, address: Int) {
+        data.copyInto(mem, address)
     }
 
     fun memByte(address: Int) = mem[address and MEMORY_MASK] and VALUE_MASK
@@ -57,6 +55,7 @@ class State {
 
     companion object {
         const val MEMORY_SIZE = 0x1000
+        const val MEMORY_SIZE_OCTO = 0x10000
         const val MEMORY_MASK = 0xfff
         const val VALUE_MASK = 0xff
         const val REGISTER_COUNT = 16

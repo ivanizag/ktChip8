@@ -20,7 +20,13 @@ fun main() {
     }
 
     //machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
-    machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/trucksimul8or.ch8")
+    // Uses octo planes:
+    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/trucksimul8or.ch8")
+    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8")
+    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/superneatboy.ch8")
+    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/skyward.ch8")
+    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8")
+    machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/rockto.ch8")
 
     ui.addKeyListener(object: KeyAdapter() {
         override fun keyReleased(e: KeyEvent?) {
