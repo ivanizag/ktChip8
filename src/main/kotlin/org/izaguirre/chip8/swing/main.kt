@@ -8,6 +8,7 @@ import java.io.File
 import java.time.Duration
 import java.time.Instant
 import javax.swing.JFileChooser
+import javax.swing.Timer
 
 const val CYCLES_PER_FRAME_DEFAULT = 17
 const val MS_PER_FRAME =  17 // 60 Hz
