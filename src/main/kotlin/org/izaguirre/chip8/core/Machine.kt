@@ -7,8 +7,6 @@ import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_HEIGHT
 import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
-import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK_OCTO
-import org.izaguirre.chip8.core.State.Companion.MEMORY_SIZE
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
 import kotlin.random.Random
@@ -70,8 +68,12 @@ class Machine {
         state.skip()
         when (c) {
             0x0 -> when (nnn) {
+                in 0x0c0..0x0cf -> display.scroll(0, n) // DOWN
+                in 0x0d0..0x0df -> display.scroll(0, -n) // UP
                 0x0e0 -> display.cls() // CLS
                 0x0ee -> state.pop() // RET
+                0x0fb -> display.scroll(4, 0) // RIGHT
+                0x0fc -> display.scroll(-4, 0) // LEFT
                 0x0fe -> display.lores() // LOW
                 0x0ff -> display.hires() // HIGH
                 else -> throw Exception("SYS ${opcode.toString(16).toUpperCase()} not supported") // SYS
@@ -141,6 +143,7 @@ class Machine {
             }
             0xf -> when (kk) {
                 0x00 -> { // LD I, longaddr
+                    state.longI = true
                     state.i = state.memWord(state.pc)
                     state.skip()
                 }
@@ -160,11 +163,11 @@ class Machine {
                 0x18 -> state.st = state.v[x] // LD ST, VX
                 0x1e -> { // ADD I, Vx
                      val r = state.i + state.v[x]
-                     state.i = r and MEMORY_MASK_OCTO // It may be an issue with long addresses
-                     state.v[0xf] = if (r > MEMORY_MASK_OCTO) 1 else 0
+                     state.i = r
+                     state.v[0xf] = if (r > MEMORY_MASK) 1 else 0
                 }
-                0x29 -> state.i = (FONT_ADDRESS + state.v[x] * FONT_HEIGHT) /*and MEMORY_MASK*/ // LD F, Vx
-                0x30 -> state.i = (LARGE_FONT_ADDRESS + state.v[x] * LARGE_FONT_HEIGHT) /*and MEMORY_MASK*/ // LD HF, Vx
+                0x29 -> state.i = (FONT_ADDRESS + state.v[x] * FONT_HEIGHT) // LD F, Vx
+                0x30 -> state.i = (LARGE_FONT_ADDRESS + state.v[x] * LARGE_FONT_HEIGHT) // LD HF, Vx
                 0x33 -> { // LD B, Vx
                     var vx = state.v[x]
                     state.memSet(state.i + 2, vx.rem(10))
@@ -188,7 +191,7 @@ class Machine {
                         state.v48[i] = state.v[i]
                     }
                 }
-                0x85 -> { // LD VX, R  (schio)
+                0x85 -> { // LD VX, R  (schip)
                     for (i in 0..(x and 7)) {
                         state.v[i] = state.v48[i]
                     }
@@ -231,8 +234,12 @@ class Machine {
         // TechRef 3.1
         return when (c) {
             0x0 -> when (nnn) {
+                in 0x0c0..0x0cf -> "DOWN $sn" // SCHIP
+                in 0x0d0..0x0df -> "UP $sn" // OCTO
                 0x0e0 -> "CLS"
                 0x0ee -> "RET"
+                0x0fb -> "RIGHT 4" // SCHIP
+                0x0fc -> "LEFT 4" // SCHIP
                 0x0fe -> "LOW" // SCHIP
                 0x0ff -> "HIGH" // SCHIP
                 else -> "SYS $snnn"

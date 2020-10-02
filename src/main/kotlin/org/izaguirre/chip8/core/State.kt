@@ -24,6 +24,10 @@ class State {
     var v = IntArray(REGISTER_COUNT) // Must be 0 to 255
     var v48 = IntArray(REGISTER48_COUNT) // Must be 0 to 255
     var i = 0
+        set(value) {
+            field = value and if (longI) MEMORY_MASK_OCTO else MEMORY_MASK
+        }
+    var longI = false // Support 16 bit i, instead of 12
 
     // TechRef 2.5 Timers
     var dt = 0

@@ -55,7 +55,11 @@ class PersistenceDisplay() {
         val DECAY = Array<Color>(11) { Color(50, 50 + it*20, 50)}
         val DECAY_LARGE = Array<Color>(51) { Color(50, 50 + it*4, 50)}
 
-        val COLORS = arrayOf(Color.DARK_GRAY, Color.GREEN, Color.BLUE, Color.RED)
+        val COLORS = arrayOf( // From Octo
+            Color(0xf9ffb3),
+            Color(0x3d8026),
+            Color(0xabcc47),
+            Color(0x00121a))
     }
 
 }

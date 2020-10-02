@@ -62,7 +62,7 @@ class Display (
     }
 
     fun sprite(s: State, i: Int, x: Int, y: Int, n: Int, plane: Int): Boolean {
-        if (n==0 && isHires) {
+        if (n==0 /*&& isHires // sk8 does big sprites on lores */) {
             wideSprite(s, i, x, y, plane)
         }
 
@@ -96,6 +96,24 @@ class Display (
         }
         return collision
     }
+
+
+    fun scroll(deltaX: Int, deltaY: Int) {
+        val newBuffer = frameBuffer.clone()
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val dst = y * width + x
+                val src = (y - deltaY) * width + x - deltaX
+                var oldValue = 0
+                if ((y-deltaY) in 0 until height && (x-deltaX) in 0 until width) {
+                    oldValue = frameBuffer[src] and activePlanes
+                }
+                newBuffer[dst] = (newBuffer[dst] and activePlanes.inv()) or oldValue
+            }
+        }
+        frameBuffer = newBuffer
+    }
+
 
     fun getPixelColor(x: Int, y: Int): Int {
         val pos = y.rem(height) * width + x.rem(width)

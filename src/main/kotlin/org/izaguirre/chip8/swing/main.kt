@@ -18,15 +18,13 @@ fun main() {
     val machine = Machine()
     val keyboard = Keyboard()
     machine.keypad = keyboard
-    var cycles_per_frame = CYCLES_PER_FRAME_DEFAULT
+    var cyclesPerFrame = CYCLES_PER_FRAME_DEFAULT
 
     //machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
     // Weird behaviour:
     //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8"
-    // Uses scroll (fc, cx):
-    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8"
     //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/skyward.ch8"
-    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8"
+    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8"
     machine.loadRom(currentRom)
 
     // Setup UI
@@ -63,18 +61,18 @@ fun main() {
                     ui.persistenceDisplay.decay = PersistenceDisplay.DECAY_LARGE
                 }
                 KeyEvent.VK_F10 -> {
-                    cycles_per_frame /= 2
-                    if (cycles_per_frame == 0) {
-                        cycles_per_frame = 1
+                    cyclesPerFrame /= 2
+                    if (cyclesPerFrame == 0) {
+                        cyclesPerFrame = 1
                     }
                 }
                 KeyEvent.VK_F11 -> {
-                    cycles_per_frame = CYCLES_PER_FRAME_DEFAULT
+                    cyclesPerFrame = CYCLES_PER_FRAME_DEFAULT
                 }
                 KeyEvent.VK_F12 -> {
-                    cycles_per_frame *= 2
-                    if (cycles_per_frame > 1000 * CYCLES_PER_FRAME_DEFAULT) {
-                        cycles_per_frame = 1000 * CYCLES_PER_FRAME_DEFAULT
+                    cyclesPerFrame *= 2
+                    if (cyclesPerFrame > 1000 * CYCLES_PER_FRAME_DEFAULT) {
+                        cyclesPerFrame = 1000 * CYCLES_PER_FRAME_DEFAULT
                     }
                 }
             }
@@ -86,7 +84,7 @@ fun main() {
 
     Timer(MS_PER_FRAME) {
         machine.tickTimer()
-        repeat (cycles_per_frame) {
+        repeat (cyclesPerFrame) {
             machine.printStep()
             machine.tickCpu()
         }
@@ -96,7 +94,7 @@ fun main() {
         // Timing
         val newTime = Instant.now()
         val delta = Duration.between(lastTime, newTime)
-        val freq = 1000 * cycles_per_frame / delta.toMillis()
+        val freq = 1000 * cyclesPerFrame / delta.toMillis()
         lastTime = newTime
         ui.title = "Chip8 @ ${freq}Hz"
     }.start()
