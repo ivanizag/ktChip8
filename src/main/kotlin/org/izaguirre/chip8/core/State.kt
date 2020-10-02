@@ -41,6 +41,13 @@ class State {
     fun unskip() {
         jump(pc-2)
     }
+    fun skipConditional(condition: Boolean) {
+        if (condition) {
+            // If there is an Octo load address, jump over it
+            if (memWord(pc) == 0xf000) skip()
+            skip()
+        }
+    }
 
     private var stack = IntArray(STACK_DEPTH)
     private var sp = 0
@@ -57,6 +64,7 @@ class State {
         const val MEMORY_SIZE = 0x1000
         const val MEMORY_SIZE_OCTO = 0x10000
         const val MEMORY_MASK = 0xfff
+        const val MEMORY_MASK_OCTO = 0xffff
         const val VALUE_MASK = 0xff
         const val REGISTER_COUNT = 16
         const val REGISTER48_COUNT = 8

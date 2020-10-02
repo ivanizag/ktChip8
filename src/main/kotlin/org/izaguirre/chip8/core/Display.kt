@@ -5,74 +5,121 @@ class Display (
 ) {
     var isHires = false
     var width = 64
+        private set
     var height = 32
-    private var frameBuffer = Array(height) {BooleanArray(width)}
+        private set
+    private var frameBuffer = IntArray(height*width)
+
+    // Secondary octo plane
+    private var activePlanes = 1
+    var hasPlanes = false
+        private set
 
     fun cls() {
-        frameBuffer = Array(height) {BooleanArray(width)}
+        for (i in 0 until frameBuffer.size) {
+            frameBuffer[i] = frameBuffer[i] and activePlanes.inv()
+        }
+    }
+
+    fun reset() {
+        frameBuffer = IntArray(height*width)
+        activePlanes = 1
+        hasPlanes = false
     }
 
     fun lores() {
         isHires = false
         width = 64
         height = 32
-        cls()
+        reset()
     }
 
     fun hires() {
         isHires = true
         width = 128
         height = 64
-        cls()
+        reset()
     }
 
-    fun sprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {
+    fun activePlanes(planes: Int) {
+        activePlanes = planes
+        hasPlanes = true
+    }
+
+    fun multiPlaneSprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {
+        var collision = false
+        var i = i
+        if ((activePlanes and 1) !=0) {
+            collision = sprite(s, i, x, y, n, 1)
+            i += if (n == 0) 32 else n
+        }
+
+        if ((activePlanes and 2) != 0) {
+            collision = collision || sprite(s, i, x, y, n, 2)
+        }
+
+        return if (collision) 1 else 0
+    }
+
+    fun sprite(s: State, i: Int, x: Int, y: Int, n: Int, plane: Int): Boolean {
         if (n==0 && isHires) {
-            wideSprite(s, i, x, y)
+            wideSprite(s, i, x, y, plane)
         }
 
         var collision = false
         for (h in 0 until n) {
            val pattern = s.memByte(i+h)
             for (w in 0..7) {
-                val current = getPixel(x+w, y+h)
+                val current = getPixel(x+w, y+h, plane)
                 val new = (pattern shr (7-w) and 1) == 1
-                setPixel(x+w, y+h, current xor new)
+                setPixel(x+w, y+h, plane,current xor new)
                 if (new == current) {
-                    collision = collision or new // as new==current
+                    collision = collision || new // as new==current
                 }
             }
         }
-        return if (collision) 1 else 0
+        return collision
     }
 
-    fun wideSprite(s: State, i: Int, x: Int, y: Int): Int {
+    private fun wideSprite(s: State, i: Int, x: Int, y: Int, plane:  Int): Boolean {
         var collision = false
         for (h in 0 until 16) {
             val pattern = s.memWord(i+2*h)
             for (w in 0 until 16) {
-                val current = getPixel(x+w, y+h)
+                val current = getPixel(x+w, y+h, plane)
                 val new = (pattern shr (15-w) and 1) == 1
-                setPixel(x+w, y+h, current xor new)
+                setPixel(x+w, y+h, plane, current xor new)
                 if (new == current) {
-                    collision = collision or new // as new==current
+                    collision = collision || new // as new==current
                 }
             }
         }
-        return if (collision) 1 else 0
+        return collision
     }
 
+    fun getPixelColor(x: Int, y: Int): Int {
+        val pos = y.rem(height) * width + x.rem(width)
+        return frameBuffer[pos]
+    }
 
+    private fun getPixel(x: Int, y: Int, plane: Int): Boolean {
+        val pos = y.rem(height) * width + x.rem(width)
+        return (frameBuffer[pos] and plane) != 0
+    }
 
-    fun getPixel(x: Int, y: Int) = frameBuffer[y.rem(height)][x.rem(width)]
-    private fun setPixel(x: Int, y: Int, v: Boolean) {
-        frameBuffer[y.rem(height)][x.rem(width)] = v
+    private fun setPixel(x: Int, y: Int, plane: Int, v: Boolean) {
+        val pos = y.rem(height) * width + x.rem(width)
+        if (v) {
+            frameBuffer[pos] = frameBuffer[pos] or plane
+        } else {
+            frameBuffer[pos] = frameBuffer[pos] and plane.inv()
+        }
     }
 
     fun printScreen() {
         for (y in 0 until height) {
             for (x in 0 until width) {
-                if (getPixel(x, y)) {
+                if (getPixel(x, y, 1)) {
                     print("#")
                 } else {
                     print(" ")

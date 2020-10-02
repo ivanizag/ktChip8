@@ -7,6 +7,7 @@ import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
 import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_HEIGHT
 import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
+import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK_OCTO
 import org.izaguirre.chip8.core.State.Companion.MEMORY_SIZE
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
@@ -80,9 +81,22 @@ class Machine {
                 state.push()
                 state.jump(nnn)
             }
-            0x3 -> if (state.v[x] == kk) state.skip() // SE Vx, byte
-            0x4 -> if (state.v[x] != kk) state.skip() // SNE Vx, byte
-            0x5 -> if (state.v[x] == state.v[y]) state.skip() // SE Vx, Vy
+            0x3 -> state.skipConditional(state.v[x] == kk) // SE Vx, byte
+            0x4 -> state.skipConditional(state.v[x] != kk) // SNE Vx, byte
+            0x5 -> when(n) {
+                0x0 -> state.skipConditional(state.v[x] == state.v[y]) // SE Vx, Vy
+                0x2 -> { // SAVE VX, VY
+                    for (i in x..y) {
+                        state.memSet(state.i + i - x, state.v[i])
+                    }
+                }
+                0x3 -> { // LOAD VX, VY
+                    for (i in x..y) {
+                        state.v[i] = state.memByte(state.i - i)
+                    }
+                }
+                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+            }
             0x6 -> state.v[x] = kk // LD Vx, byte
             0x7 -> state.v[x] = (state.v[x] + kk) and VALUE_MASK // ADD Vx, byte
             0x8 -> when (n) {
@@ -115,14 +129,14 @@ class Machine {
                 }
                 else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
-            0x9 -> if (state.v[x] != state.v[y]) state.skip() // SNE Vx, Vy
+            0x9 -> state.skipConditional(state.v[x] != state.v[y]) // SNE Vx, Vy
             0xa -> state.i = nnn // LD I, addr
             0xb -> state.jump(nnn + state.v[0]) // JP V0, addr
             0xc -> state.v[x] = Random.nextInt() and kk // RND Vx, byte
-            0xd -> state.v[0xf] = display.sprite(state, state.i, state.v[x], state.v[y], n) // DRW Vx, Vy, nibble
+            0xd -> state.v[0xf] = display.multiPlaneSprite(state, state.i, state.v[x], state.v[y], n) // DRW Vx, Vy, nibble
             0xe -> when (kk) {
-                0x9e -> if (keypad.isKeyPressed(state.v[x])) state.skip() // SKP Vx
-                0xa1 -> if (!keypad.isKeyPressed(state.v[x])) state.skip() // SKNP Vx
+                0x9e -> state.skipConditional(keypad.isKeyPressed(state.v[x])) // SKP Vx
+                0xa1 -> state.skipConditional(!keypad.isKeyPressed(state.v[x])) // SKNP Vx
                 else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0xf -> when (kk) {
@@ -130,7 +144,7 @@ class Machine {
                     state.i = state.memWord(state.pc)
                     state.skip()
                 }
-                0x01 -> throw Exception("Octo drawing planes not supported")
+                0x01 -> display.activePlanes(x) // PLANES x
                 0x02 -> {} // AUDIO Do nothing
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
                 0x0a -> { // LD Vx, K
@@ -146,11 +160,11 @@ class Machine {
                 0x18 -> state.st = state.v[x] // LD ST, VX
                 0x1e -> { // ADD I, Vx
                      val r = state.i + state.v[x]
-                     state.i = r and MEMORY_MASK
-                     state.v[0xf] = if (r > MEMORY_MASK) 1 else 0
+                     state.i = r and MEMORY_MASK_OCTO // It may be an issue with long addresses
+                     state.v[0xf] = if (r > MEMORY_MASK_OCTO) 1 else 0
                 }
-                0x29 -> state.i = (FONT_ADDRESS + state.v[x] * FONT_HEIGHT) and MEMORY_MASK // LD F, Vx
-                0x30 -> state.i = (LARGE_FONT_ADDRESS + state.v[x] * LARGE_FONT_HEIGHT) and MEMORY_MASK // LD HF, Vx
+                0x29 -> state.i = (FONT_ADDRESS + state.v[x] * FONT_HEIGHT) /*and MEMORY_MASK*/ // LD F, Vx
+                0x30 -> state.i = (LARGE_FONT_ADDRESS + state.v[x] * LARGE_FONT_HEIGHT) /*and MEMORY_MASK*/ // LD HF, Vx
                 0x33 -> { // LD B, Vx
                     var vx = state.v[x]
                     state.memSet(state.i + 2, vx.rem(10))
@@ -185,14 +199,18 @@ class Machine {
         }
     }
 
+    private var lastPrintedAddress = -1 // To avoid printing  keyboard pooling
     fun printStep() {
-        val opcode = state.memWord(state.pc)
-        print("%03x: %04x   %-20s".format(state.pc, opcode, disasm(opcode)))
+        val address = state.pc
+        if (address == lastPrintedAddress) return
+        lastPrintedAddress = address
+
+        val opcode = state.memWord(address)
+        print("%03x: %04x   %-20s".format(address, opcode, disasm(opcode)))
         for (i in 0..15) {
             print("%02x ".format(state.v[i]))
         }
         println("%03x".format(state.i))
-
     }
 
     private fun disasm(opcode: Int): String {
@@ -223,7 +241,12 @@ class Machine {
             0x2 -> "CALL $snnn"
             0x3 -> "SE V${sx}, $skk"
             0x4 -> "SNE V${sx}, $skk"
-            0x5 -> "SE V${sx}, V${sy}"
+            0x5 -> when(n) {
+                0x0 -> "SE V${sx}, V${sy}"
+                0x2 -> "SAVE V${sx}, V${sy}" // OCTO
+                0x3 -> "LOAD V${sx}, V${sy}" // OCTO
+                else -> "5??? V${sx}, V${sy}"
+            }
             0x6 -> "LD V${sx}, $skk"
             0x7 -> "ADD V${sx}, $skk"
             0x8 -> when (n) {
@@ -236,7 +259,7 @@ class Machine {
                 0x6 -> "SHR V${sx}"
                 0x7 -> "SUBN V${sx}, V${sy}"
                 0xe -> "SHL V${sx}"
-                else -> "??? V${sx}, V${sy}"
+                else -> "8??? V${sx}, V${sy}"
             }
             0x9 -> "SE V$sx, V$sy"
             0xa -> "LD I, $snnn"
@@ -246,7 +269,7 @@ class Machine {
             0xe -> when (kk) {
                 0x9e -> "SKP V${sx}"
                 0xa1 -> "SKNP V${sx}"
-                else -> "???"
+                else -> "e???"
             }
             0xf -> when (kk) {
                 0x00 -> "LD I, nnnn" // OCTO
@@ -264,7 +287,7 @@ class Machine {
                 0x65 -> "LD V${sx}, [I]"
                 0x75 -> "LD R, V${sx}" // SCHIP
                 0x85 -> "LD V${sx}, R" // SCHIP
-                else -> "???"
+                else -> "f???"
             }
             else -> "???"
         }

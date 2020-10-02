@@ -21,13 +21,12 @@ fun main() {
     var cycles_per_frame = CYCLES_PER_FRAME_DEFAULT
 
     //machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
-    // Uses octo planes:
-    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/trucksimul8or.ch8")
-    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8")
-    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/superneatboy.ch8")
-    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/skyward.ch8")
-    //      machine.loadRom("/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8")
-    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/piper.ch8"
+    // Weird behaviour:
+    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8"
+    // Uses scroll (fc, cx):
+    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8"
+    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/skyward.ch8"
+    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8"
     machine.loadRom(currentRom)
 
     // Setup UI
@@ -88,7 +87,7 @@ fun main() {
     Timer(MS_PER_FRAME) {
         machine.tickTimer()
         repeat (cycles_per_frame) {
-            //machine.printStep()
+            machine.printStep()
             machine.tickCpu()
         }
         ui.persistenceDisplay.update(machine.display)

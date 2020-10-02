@@ -16,6 +16,7 @@ class PersistenceDisplay() {
             field = value
             frameBuffer.fill(0)
         }
+    var hasColors = false
 
     fun update(d: Display) {
 
@@ -26,10 +27,14 @@ class PersistenceDisplay() {
             frameBuffer = IntArray(height * width)
         }
 
+        hasColors = d.hasPlanes
         var i = 0
         for (y in 0 until height) {
             for (x in 0 until width) {
-                if (d.getPixel(x, y)) {
+                if (hasColors) {
+                    // Color, no persistance
+                    frameBuffer[i] = d.getPixelColor(x, y)
+                } else if (d.getPixelColor(x, y) != 0) {
                     // Refresh phosphor
                     frameBuffer[i] = decay.size - 1
                 } else if (frameBuffer[i] > 0) {
@@ -41,12 +46,16 @@ class PersistenceDisplay() {
         }
     }
 
-    fun getPixelColor(x: Int, y:Int) = decay[frameBuffer[y*width+x]]
+    fun getPixelColor(x: Int, y:Int) =
+        if (hasColors) COLORS[frameBuffer[y * width + x]]
+        else decay[frameBuffer[y * width + x]]
 
     companion object {
         val NO_DECAY = Array<Color>(2) {Color(50, 50 + it*200, 50)}
         val DECAY = Array<Color>(11) { Color(50, 50 + it*20, 50)}
         val DECAY_LARGE = Array<Color>(51) { Color(50, 50 + it*4, 50)}
+
+        val COLORS = arrayOf(Color.DARK_GRAY, Color.GREEN, Color.BLUE, Color.RED)
     }
 
 }
