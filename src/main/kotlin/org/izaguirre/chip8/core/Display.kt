@@ -1,9 +1,8 @@
 package org.izaguirre.chip8.core
 
 // TechRef 2.3
-class Display (
-) {
-    var isHires = false
+class Display {
+    private var isHires = false
     var width = 64
         private set
     var height = 32
@@ -16,12 +15,12 @@ class Display (
         private set
 
     fun cls() {
-        for (i in 0 until frameBuffer.size) {
+        for (i in frameBuffer.indices) {
             frameBuffer[i] = frameBuffer[i] and activePlanes.inv()
         }
     }
 
-    fun reset() {
+    private fun reset() {
         frameBuffer = IntArray(height*width)
         activePlanes = 1
         hasPlanes = false
@@ -61,7 +60,7 @@ class Display (
         return if (collision) 1 else 0
     }
 
-    fun sprite(s: State, i: Int, x: Int, y: Int, n: Int, plane: Int): Boolean {
+    private fun sprite(s: State, i: Int, x: Int, y: Int, n: Int, plane: Int): Boolean {
         if (n==0 /*&& isHires // sk8 does big sprites on lores */) {
             wideSprite(s, i, x, y, plane)
         }

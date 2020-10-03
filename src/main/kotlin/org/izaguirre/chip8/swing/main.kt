@@ -20,19 +20,16 @@ fun main() {
     machine.keypad = keyboard
     var cyclesPerFrame = CYCLES_PER_FRAME_DEFAULT
 
-    //machine.loadRom("src/test/resources/sctest/SCTEST.CH8")
-    // Weird behaviour:
-    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/t8nks.ch8"
-    //    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/skyward.ch8"
-    var currentRom = "/home/casa/code/kotlin/chip8Archive/roms/sk8.ch8"
-    machine.loadRom(currentRom)
+    var currentRom: String? = null
+    //var currentRom = "/home/casa/code/kotlin/schip-games/SGAMES/ANT.ch8"
+    //machine.loadRom(currentRom)
 
     // Setup UI
     val ui = UI()
     ui.addKeyListener(keyboard)
     val fc = JFileChooser().apply {
         font = Font("TimesRoman", Font.PLAIN, 100)
-        currentDirectory = File("/home/casa/code/kotlin/chip8Archive/roms")
+        //currentDirectory = File("/home/casa/code/kotlin/chip8Archive/moreroms")
     }
 
     ui.addKeyListener(object: KeyAdapter() {
@@ -40,14 +37,16 @@ fun main() {
             when (e?.keyCode) {
                 KeyEvent.VK_F1 -> {
                     machine.reset()
-                    machine.loadRom(currentRom)
+                    currentRom?.let {
+                        machine.loadRom(it)
+                    }
                 }
                 KeyEvent.VK_F2 -> {
                     if (fc.showOpenDialog(ui) == JFileChooser.APPROVE_OPTION) {
                         fc.selectedFile?.let{
                             machine.reset()
                             currentRom = it.absolutePath
-                            machine.loadRom(currentRom)
+                            machine.loadRom(it.absolutePath)
                         }
                     }
                 }

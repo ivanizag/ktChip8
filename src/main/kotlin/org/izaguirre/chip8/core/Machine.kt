@@ -32,10 +32,12 @@ class Machine {
         private set
     val display = Display()
     var keypad: Keypad = DumbKeypad()
+    var error: String? = null
 
     fun reset() {
         state = State()
         display.lores()
+        error = null
     }
 
     fun loadRom(filename: String) {
@@ -45,6 +47,8 @@ class Machine {
         state.memCopy(data, 0x200)
         state.memCopy(FONT, FONT_ADDRESS)
         state.memCopy(LARGE_FONT, LARGE_FONT_ADDRESS)
+
+        error = null
     }
 
     fun tickTimer() {
@@ -54,6 +58,21 @@ class Machine {
     }
 
     fun tickCpu() {
+        if (error != null) {
+            // Failure state until next reset or rom load
+            return
+        }
+
+        try {
+            step()
+        } catch (e: InvalidOpcodeException) {
+            println(error)
+            error = e.message
+            println(error)
+        }
+    }
+
+    private fun step() {
         // TechRef 3.0
         val opcode = state.memWord(state.pc)
         val nnn = opcode and 0xfff
@@ -76,7 +95,7 @@ class Machine {
                 0x0fc -> display.scroll(-4, 0) // LEFT
                 0x0fe -> display.lores() // LOW
                 0x0ff -> display.hires() // HIGH
-                else -> throw Exception("SYS ${opcode.toString(16).toUpperCase()} not supported") // SYS
+                else -> throw InvalidOpcodeException("SYS ${opcode.toString(16).toUpperCase()} not supported") // SYS
             }
             0x1 -> state.jump(nnn) // JP addr
             0x2 -> { // CALL addr
@@ -97,7 +116,7 @@ class Machine {
                         state.v[i] = state.memByte(state.i - i)
                     }
                 }
-                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0x6 -> state.v[x] = kk // LD Vx, byte
             0x7 -> state.v[x] = (state.v[x] + kk) and VALUE_MASK // ADD Vx, byte
@@ -129,7 +148,7 @@ class Machine {
                     state.v[0xf] = if (state.v[x] > 127) 1 else 0
                     state.v[x] = (state.v[x] shl 1) and VALUE_MASK
                 }
-                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0x9 -> state.skipConditional(state.v[x] != state.v[y]) // SNE Vx, Vy
             0xa -> state.i = nnn // LD I, addr
@@ -139,7 +158,7 @@ class Machine {
             0xe -> when (kk) {
                 0x9e -> state.skipConditional(keypad.isKeyPressed(state.v[x])) // SKP Vx
                 0xa1 -> state.skipConditional(!keypad.isKeyPressed(state.v[x])) // SKNP Vx
-                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
             0xf -> when (kk) {
                 0x00 -> { // LD I, longaddr
@@ -151,7 +170,7 @@ class Machine {
                 0x02 -> {} // AUDIO Do nothing
                 0x07 -> state.v[x] = state.dt // LD Vx, DT
                 0x0a -> { // LD Vx, K
-                    var key = keypad.nextKey()
+                    val key = keypad.nextKey()
                     if (key == null) {
                         // Block execution
                         state.unskip()
@@ -196,11 +215,13 @@ class Machine {
                         state.v[i] = state.v48[i]
                     }
                 }
-                else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
             }
-            else -> throw Exception("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+            else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
         }
     }
+
+    class InvalidOpcodeException(message: String) : Exception(message)
 
     private var lastPrintedAddress = -1 // To avoid printing  keyboard pooling
     fun printStep() {
@@ -288,7 +309,7 @@ class Machine {
                 0x18 -> "LD ST, V${sx}"
                 0x1e -> "ADD I, V${sx}"
                 0x29 -> "LD F, V${sx}"
-                0x29 -> "LD HF, V${sx}"
+                0x30 -> "LD HF, V${sx}"
                 0x33 -> "LD B, V${sx}"
                 0x55 -> "LD [I], V${sx}"
                 0x65 -> "LD V${sx}, [I]"

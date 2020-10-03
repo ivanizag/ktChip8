@@ -1,11 +1,9 @@
 package org.izaguirre.chip8.swing
 
 import org.izaguirre.chip8.core.Display
-import org.izaguirre.chip8.core.Machine
 import java.awt.Color
-import kotlin.properties.Delegates
 
-class PersistenceDisplay() {
+class PersistenceDisplay {
     var height = 0
         private set
     var width = 0
@@ -16,7 +14,7 @@ class PersistenceDisplay() {
             field = value
             frameBuffer.fill(0)
         }
-    var hasColors = false
+    private var hasColors = false
 
     fun update(d: Display) {
 
@@ -32,7 +30,7 @@ class PersistenceDisplay() {
         for (y in 0 until height) {
             for (x in 0 until width) {
                 if (hasColors) {
-                    // Color, no persistance
+                    // Color, no persistence
                     frameBuffer[i] = d.getPixelColor(x, y)
                 } else if (d.getPixelColor(x, y) != 0) {
                     // Refresh phosphor
@@ -51,9 +49,9 @@ class PersistenceDisplay() {
         else decay[frameBuffer[y * width + x]]
 
     companion object {
-        val NO_DECAY = Array<Color>(2) {Color(50, 50 + it*200, 50)}
-        val DECAY = Array<Color>(11) { Color(50, 50 + it*20, 50)}
-        val DECAY_LARGE = Array<Color>(51) { Color(50, 50 + it*4, 50)}
+        val NO_DECAY = Array(2) {Color(50, 50 + it*200, 50)}
+        val DECAY = Array(6) { Color(50, 50 + it*20, 50)}
+        val DECAY_LARGE = Array(51) { Color(50, 50 + it*4, 50)}
 
         val COLORS = arrayOf( // From Octo
             Color(0xf9ffb3),

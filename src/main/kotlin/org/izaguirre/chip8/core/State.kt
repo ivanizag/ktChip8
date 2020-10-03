@@ -1,10 +1,5 @@
 package org.izaguirre.chip8.core
 
-import org.izaguirre.chip8.core.Display.Companion.FONT
-import org.izaguirre.chip8.core.Display.Companion.FONT_ADDRESS
-import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT
-import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_ADDRESS
-
 class State {
     // TechRef 2.1 Memory
     private var mem = IntArray(MEMORY_SIZE_OCTO)
@@ -32,7 +27,6 @@ class State {
     // TechRef 2.5 Timers
     var dt = 0
     var st = 0
-    var timerCycles = 0
 
     var pc = PC_START
         private set
