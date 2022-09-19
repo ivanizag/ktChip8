@@ -9,6 +9,7 @@ import org.izaguirre.chip8.core.Display.Companion.LARGE_FONT_HEIGHT
 import org.izaguirre.chip8.core.State.Companion.MEMORY_MASK
 import org.izaguirre.chip8.core.State.Companion.VALUE_MASK
 import java.io.File
+import java.util.*
 import kotlin.random.Random
 
 /*
@@ -95,7 +96,7 @@ class Machine {
                 0x0fc -> display.scroll(-4, 0) // LEFT
                 0x0fe -> display.lores() // LOW
                 0x0ff -> display.hires() // HIGH
-                else -> throw InvalidOpcodeException("SYS ${opcode.toString(16).toUpperCase()} not supported") // SYS
+                else -> throw InvalidOpcodeException("SYS ${opcode.toString(16).uppercase(Locale.getDefault())} not supported") // SYS
             }
             0x1 -> state.jump(nnn) // JP addr
             0x2 -> { // CALL addr
@@ -116,7 +117,10 @@ class Machine {
                         state.v[i] = state.memByte(state.i - i)
                     }
                 }
-                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException(
+                    "Unknown opcode ${
+                        opcode.toString(16).uppercase(Locale.getDefault())
+                    }")
             }
             0x6 -> state.v[x] = kk // LD Vx, byte
             0x7 -> state.v[x] = (state.v[x] + kk) and VALUE_MASK // ADD Vx, byte
@@ -148,7 +152,10 @@ class Machine {
                     state.v[0xf] = if (state.v[x] > 127) 1 else 0
                     state.v[x] = (state.v[x] shl 1) and VALUE_MASK
                 }
-                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException(
+                    "Unknown opcode ${
+                        opcode.toString(16).uppercase(Locale.getDefault())
+                    }")
             }
             0x9 -> state.skipConditional(state.v[x] != state.v[y]) // SNE Vx, Vy
             0xa -> state.i = nnn // LD I, addr
@@ -158,7 +165,10 @@ class Machine {
             0xe -> when (kk) {
                 0x9e -> state.skipConditional(keypad.isKeyPressed(state.v[x])) // SKP Vx
                 0xa1 -> state.skipConditional(!keypad.isKeyPressed(state.v[x])) // SKNP Vx
-                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException(
+                    "Unknown opcode ${
+                        opcode.toString(16).uppercase(Locale.getDefault())
+                    }")
             }
             0xf -> when (kk) {
                 0x00 -> { // LD I, longaddr
@@ -215,9 +225,12 @@ class Machine {
                         state.v[i] = state.v48[i]
                     }
                 }
-                else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+                else -> throw InvalidOpcodeException(
+                    "Unknown opcode ${
+                        opcode.toString(16).uppercase(Locale.getDefault())
+                    }")
             }
-            else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).toUpperCase()}")
+            else -> throw InvalidOpcodeException("Unknown opcode ${opcode.toString(16).uppercase(Locale.getDefault())}")
         }
     }
 
@@ -240,15 +253,15 @@ class Machine {
     private fun disasm(opcode: Int): String {
 
         val nnn = opcode and 0xfff
-        val snnn = nnn.toString(16).toUpperCase()
+        val snnn = nnn.toString(16).uppercase(Locale.getDefault())
         val n = opcode and 0xf
-        val sn = n.toString(16).toUpperCase()
+        val sn = n.toString(16).uppercase(Locale.getDefault())
         val x = opcode shr 8 and 0xf
-        val sx = x.toString(16).toUpperCase()
+        val sx = x.toString(16).uppercase(Locale.getDefault())
         val y = opcode shr 4 and 0xf
-        val sy = y.toString(16).toUpperCase()
+        val sy = y.toString(16).uppercase(Locale.getDefault())
         val kk = opcode and 0xff
-        val skk = kk.toString(16).toUpperCase()
+        val skk = kk.toString(16).uppercase(Locale.getDefault())
         val c = opcode shr 12 and 0xf
         /* Opcodes can be cnnn, cxkk or cxyn */
 
@@ -265,16 +278,18 @@ class Machine {
                 0x0ff -> "HIGH" // SCHIP
                 else -> "SYS $snnn"
             }
+
             0x1 -> "JP $snnn"
             0x2 -> "CALL $snnn"
             0x3 -> "SE V${sx}, $skk"
             0x4 -> "SNE V${sx}, $skk"
-            0x5 -> when(n) {
+            0x5 -> when (n) {
                 0x0 -> "SE V${sx}, V${sy}"
                 0x2 -> "SAVE V${sx}, V${sy}" // OCTO
                 0x3 -> "LOAD V${sx}, V${sy}" // OCTO
                 else -> "5??? V${sx}, V${sy}"
             }
+
             0x6 -> "LD V${sx}, $skk"
             0x7 -> "ADD V${sx}, $skk"
             0x8 -> when (n) {
@@ -289,6 +304,7 @@ class Machine {
                 0xe -> "SHL V${sx}"
                 else -> "8??? V${sx}, V${sy}"
             }
+
             0x9 -> "SE V$sx, V$sy"
             0xa -> "LD I, $snnn"
             0xb -> "JP V0, $snnn"
@@ -299,6 +315,7 @@ class Machine {
                 0xa1 -> "SKNP V${sx}"
                 else -> "e???"
             }
+
             0xf -> when (kk) {
                 0x00 -> "LD I, nnnn" // OCTO
                 0x01 -> "PLANE $sx" // OCTO
@@ -317,6 +334,7 @@ class Machine {
                 0x85 -> "LD V${sx}, R" // SCHIP
                 else -> "f???"
             }
+
             else -> "???"
         }
     }

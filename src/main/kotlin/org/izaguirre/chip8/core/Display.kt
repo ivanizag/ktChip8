@@ -47,14 +47,14 @@ class Display {
 
     fun multiPlaneSprite(s: State, i: Int, x: Int, y: Int, n: Int): Int {
         var collision = false
-        var i = i
+        var i2 = i
         if ((activePlanes and 1) !=0) {
-            collision = sprite(s, i, x, y, n, 1)
-            i += if (n == 0) 32 else n
+            collision = sprite(s, i2, x, y, n, 1)
+            i2 += if (n == 0) 32 else n
         }
 
         if ((activePlanes and 2) != 0) {
-            collision = collision || sprite(s, i, x, y, n, 2)
+            collision = collision || sprite(s, i2, x, y, n, 2)
         }
 
         return if (collision) 1 else 0

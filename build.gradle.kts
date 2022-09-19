@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.7.10"
     application
 }
 group = "org.izaguirre"
-version = "1.0-SNAPSHOT"
+version = "1.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -15,11 +15,9 @@ dependencies {
     testImplementation(kotlin("test-junit"))
 }
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "14"
 }
 tasks.test {
     useJUnitPlatform()
 }
-application {
-    mainClassName = "MainKt"
-}
+
