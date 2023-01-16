@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation("org.junit.jupiter:junit-jupiter:5.9.1")
+    implementation("org.junit.jupiter:junit-jupiter:5.9.2")
     testImplementation(kotlin("test-junit"))
 }
 tasks.withType<KotlinCompile>() {
