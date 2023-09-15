@@ -22,7 +22,7 @@ tasks.withType<KotlinCompile>() {
 }
 tasks.test {
     useJUnitPlatform()
-}git 
+}
 
 application.mainClass.set("org.izaguirre.chip8.swing.MainKt")
 
