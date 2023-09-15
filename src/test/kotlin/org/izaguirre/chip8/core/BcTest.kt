@@ -18,7 +18,6 @@ internal class BcTest {
         val machine = Machine()
         machine.loadRom("src/test/resources/bctest/BC_test.ch8")
 
-        var success = false
         var error: Int? = null
         var cycles = 0
         while (machine.state.pc != END_ADDRESS && cycles < TIMEOUT_CYCLES ) {

@@ -4,7 +4,6 @@ import org.izaguirre.chip8.core.*
 import java.awt.Font
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import java.io.File
 import java.time.Duration
 import java.time.Instant
 import javax.swing.JFileChooser
