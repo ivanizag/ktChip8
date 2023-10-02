@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "1.8.10"
     application
     jacoco
-    id("org.sonarqube") version "4.3.1.3277"
+    id("org.sonarqube") version "4.4.0.3356"
 }
 group = "org.izaguirre"
 version = "1.1-SNAPSHOT"
